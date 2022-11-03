@@ -12,7 +12,7 @@ const { items } = require("./fakeDb")
 
 router.get("/", function (req, res) {
   return res
-    .json(db.items);
+    .json(items);
 })
 
 /** Accepts JSON object of a single item, adds it to the "database"
@@ -23,7 +23,7 @@ router.post("/", function (req, res) {
 
   const newItem = req.body;
 
-  if (newItem in items) {
+  if (items.find(item => item.name === newItem.name)) {
     throw new BadRequestError("Item already in shopping list");
   } else {
     items.push(newItem);
