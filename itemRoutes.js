@@ -1,8 +1,8 @@
-"use strict"
+"use strict";
 const express = require("express");
 const router = new express.Router();
-const { NotFoundError, BadRequestError} = require("./expressError");
-const { items } = require("./fakeDb")
+const { NotFoundError, BadRequestError } = require("./expressError");
+const { items } = require("./fakeDb");
 
 
 /** Returns JSON list of all shopping items
@@ -13,8 +13,8 @@ const { items } = require("./fakeDb")
 router.get("/", function (req, res) {
   return res
     .json(items);
-})
-
+});
+// show exactly what is returned like the previous route
 /** Accepts JSON object of a single item, adds it to the "database"
  * Returns the JSON object with status code 201.
  * If item already exists in shopping list, error is thrown.
@@ -29,10 +29,10 @@ router.post("/", function (req, res) {
     items.push(newItem);
 
     return res
-    .status(201)
-    .json({"added":newItem});
+      .status(201)
+      .json({ "added": newItem });
   }
-})
+});
 
 /** Accepts JSON for single item in URL attribute.
  * Returns that single item object in JSON
@@ -40,50 +40,53 @@ router.post("/", function (req, res) {
  * */
 router.get("/:name", function (req, res) {
   const searchName = req.params.name;
-
+  // can use find()
   for (let item of items) {
     if (item.name === searchName) {
       return res
-      .json(item)
+        .json(item);
     }
   }
 
   throw new BadRequestError("Item does not exist in shopping list");
-})
+});
+// Edit based on what's passed
 /** Accepts item name and price request change from URL and body.
  * Updates in database. Returns updated status
  * If item does not exist in shopping list, error is thrown.
   */
-router.patch("/:name", function (req,res) {
+router.patch("/:name", function (req, res) {
 
   const reqItem = req.body.name;
   const oldName = req.params.name;
   for (let item of items) {
     if (item.name === oldName) {
-        item = {
-          name:reqItem,
-          price: req.body.price
-        }
-        return res.json({"updated":item});
+      item = {
+        name: reqItem,
+        price: req.body.price
+      };
+      return res.json({ "updated": item });
     }
   }
+  // not found request error
   throw new BadRequestError("Item does not exist in shopping list");
-})
+});
+// Findindex()
 /** Accepts item to delete in URL. Deletes object with given name as key
  * Returns updated status and throws an error if item doesnt exist in the database.
  */
-router.delete("/:name", function (req,res) {
+router.delete("/:name", function (req, res) {
 
   const reqItem = req.params.name;
-  for(let i = 0;i<items.length;i++) {
+  for (let i = 0; i < items.length; i++) {
     if (items[i].name === reqItem) {
-      items.splice(i,1);
-      console.log(items)
-      return res.json({"message":"Deleted"});
+      items.splice(i, 1);
+      console.log(items);
+      return res.json({ "message": "Deleted" });
+    }
   }
-}
 
   throw new BadRequestError("Item does not exist in shopping list");
-})
+});
 
 module.exports = router;

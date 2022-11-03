@@ -39,7 +39,7 @@ describe("GET /items/:name", function() {
   /* Test getting item with incorrect name */
   it("Responds with 400 if cannot find item", async function() {
     const resp = await request(app).get(`/items/not-real-item`);
-    expect(resp.body.error.status).toEqual(400);
+    expect(resp.body.error.status).toEqual(404);
     expect(resp.body.error.message).toEqual('Item does not exist in shopping list');
   })
 })
@@ -68,3 +68,18 @@ describe("POST /items", function() {
     expect(resp.body.error.message).toEqual("Item already in shopping list");
   })
 })
+
+// bug magnet, very subtle, multiple tests would be great
+/* Test Patch for modifying an existing item*/
+describe("PATCH /items/:name", function () {
+
+  it("Modifies chosen item in the shopping list", async function() {
+    const resp = await request(app)
+      .patch(`/items/poptarts`)
+      .send(testItem);
+
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body).toEqual({"updated":testItem });
+  })
+})
+
